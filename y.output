@@ -1,0 +1,174 @@
+Grammar
+
+    0 $accept: __list $end
+
+    1 __list: _list ST
+
+    2 _list: %empty
+    3      | list
+
+    4 list: item
+    5     | item list
+
+    6 item: minDic
+
+    7 minDic: _min
+
+    8 _min: LPAREN NUM COMMA NUM RPAREN
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    error (256)
+    COMMA (258) 8
+    LPAREN (259) 8
+    RPAREN (260) 8
+    NUM <fval> (261) 8
+    ST (262) 1
+
+
+Nonterminals, with rules where they appear
+
+    $accept (8)
+        on left: 0
+    __list <ival> (9)
+        on left: 1
+        on right: 0
+    _list <ival> (10)
+        on left: 2 3
+        on right: 1
+    list <ival> (11)
+        on left: 4 5
+        on right: 3 5
+    item (12)
+        on left: 6
+        on right: 4 5
+    minDic (13)
+        on left: 7
+        on right: 6
+    _min (14)
+        on left: 8
+        on right: 7
+
+
+State 0
+
+    0 $accept: . __list $end
+
+    LPAREN  shift, and go to state 1
+
+    $default  reduce using rule 2 (_list)
+
+    __list  go to state 2
+    _list   go to state 3
+    list    go to state 4
+    item    go to state 5
+    minDic  go to state 6
+    _min    go to state 7
+
+
+State 1
+
+    8 _min: LPAREN . NUM COMMA NUM RPAREN
+
+    NUM  shift, and go to state 8
+
+
+State 2
+
+    0 $accept: __list . $end
+
+    $end  shift, and go to state 9
+
+
+State 3
+
+    1 __list: _list . ST
+
+    ST  shift, and go to state 10
+
+
+State 4
+
+    3 _list: list .
+
+    $default  reduce using rule 3 (_list)
+
+
+State 5
+
+    4 list: item .
+    5     | item . list
+
+    LPAREN  shift, and go to state 1
+
+    $default  reduce using rule 4 (list)
+
+    list    go to state 11
+    item    go to state 5
+    minDic  go to state 6
+    _min    go to state 7
+
+
+State 6
+
+    6 item: minDic .
+
+    $default  reduce using rule 6 (item)
+
+
+State 7
+
+    7 minDic: _min .
+
+    $default  reduce using rule 7 (minDic)
+
+
+State 8
+
+    8 _min: LPAREN NUM . COMMA NUM RPAREN
+
+    COMMA  shift, and go to state 12
+
+
+State 9
+
+    0 $accept: __list $end .
+
+    $default  accept
+
+
+State 10
+
+    1 __list: _list ST .
+
+    $default  reduce using rule 1 (__list)
+
+
+State 11
+
+    5 list: item list .
+
+    $default  reduce using rule 5 (list)
+
+
+State 12
+
+    8 _min: LPAREN NUM COMMA . NUM RPAREN
+
+    NUM  shift, and go to state 13
+
+
+State 13
+
+    8 _min: LPAREN NUM COMMA NUM . RPAREN
+
+    RPAREN  shift, and go to state 14
+
+
+State 14
+
+    8 _min: LPAREN NUM COMMA NUM RPAREN .
+
+    $default  reduce using rule 8 (_min)
