@@ -75,24 +75,21 @@
 int noVector3 = 0;
 int noVector2 = 0;
 int wasError = 0;
-float min = 100000000;
-float max  = 0.0;
+float firstNumberX = 0;
+float firstNumberY = 0;
+float oldNumberX = 0;
+float oldNumberY = 0;
+float max  = -1.0;
+float temp = 0.0 ;
 int indexNumber = 0;
-int indexPointMin = 0;
-int indexPointMax = 0;
 float *arr_distan = NULL;
-struct Point
-{
-    int x[100];
-    int y[100];
-};
 
 float distanct(float x1, float y1, float x2, float y2){
     return (x1-x2)*(x1-x2) + (y1-y2)*(y1-y2);
 }
 
 
-#line 96 "y.tab.c"
+#line 93 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -158,12 +155,12 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 27 "yacc.y"
+#line 24 "yacc.y"
 
  float fval; 
  int ival;
 
-#line 167 "y.tab.c"
+#line 164 "y.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -539,7 +536,7 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    42,    42,    49,    50,    53,    54,    57,    59,    61
+       0,    39,    39,    51,    52,    55,    56,    59,    61,    63
 };
 #endif
 
@@ -1327,62 +1324,87 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 42 "yacc.y"
-                 {	 printf("No. of Points: %d\n", (yyvsp[-1].ival)); 
-			         printf("The smallest distance is: %f \n", sqrt(min));
-                     printf("Position of the pair of points: %d\n", indexPointMin);
-                     printf("The smallest distance is: %f \n", sqrt(max));
-                     printf("Position of the pair of points: %d\n", indexPointMax);
+#line 39 "yacc.y"
+                 {	 
+                     *(arr_distan + indexNumber - 1 ) = distanct(oldNumberX,oldNumberY,firstNumberX,firstNumberY);
+                    //print perimeterPoligon
+                    float perimeterPoligon = 0;
+                    for(int i = 0; i < indexNumber; i++){
+                        perimeterPoligon += sqrt(arr_distan[i]);
+                    }
+                    printf("The perimeterof poligon is %0.3f \n", perimeterPoligon);
+                
+			        
 			 }
-#line 1338 "y.tab.c"
+#line 1340 "y.tab.c"
     break;
 
   case 3:
-#line 49 "yacc.y"
+#line 51 "yacc.y"
                     { (yyval.ival) = 0; }
-#line 1344 "y.tab.c"
+#line 1346 "y.tab.c"
     break;
 
   case 5:
-#line 53 "yacc.y"
+#line 55 "yacc.y"
                        { (yyval.ival) = 1; }
-#line 1350 "y.tab.c"
+#line 1352 "y.tab.c"
     break;
 
   case 6:
-#line 54 "yacc.y"
+#line 56 "yacc.y"
                    { (yyval.ival) = (yyvsp[0].ival) + 1; }
-#line 1356 "y.tab.c"
+#line 1358 "y.tab.c"
     break;
 
   case 7:
-#line 57 "yacc.y"
+#line 59 "yacc.y"
              {noVector2++; }
-#line 1362 "y.tab.c"
+#line 1364 "y.tab.c"
     break;
 
   case 9:
-#line 61 "yacc.y"
+#line 63 "yacc.y"
                                  {
-                        *(arr_distan + indexNumber) = (yyvsp[-3].fval);
-                        indexNumber = indexNumber+ 1;
-                        *(arr_distan + indexNumber) = (yyvsp[-1].fval);
+                         if(indexNumber == 0){
+                            firstNumberX = (yyvsp[-3].fval);
+                            firstNumberY = (yyvsp[-1].fval);
+                            oldNumberX = (yyvsp[-3].fval);
+                            oldNumberY = (yyvsp[-1].fval);
+                         } 
+
                         indexNumber = indexNumber +1;
-                        if(distanct(0,0,(yyvsp[-3].fval),(yyvsp[-1].fval)) < min){
-                            min = distanct(0,0,(yyvsp[-3].fval),(yyvsp[-1].fval));
-                            indexPointMin = (indexNumber+1)/2;
-                        }
-                        if(distanct(0,0,(yyvsp[-3].fval),(yyvsp[-1].fval)) >= max){
-                            max = distanct(0,0,(yyvsp[-3].fval),(yyvsp[-1].fval));
-                            indexPointMax = (indexNumber+1)/2;
-                        }
+                        
+                        //punkt 3
+                        if(max < distanct(0,0,(yyvsp[-3].fval),(yyvsp[-1].fval)))
+                         {
+                                max = distanct(0,0,(yyvsp[-3].fval),(yyvsp[-1].fval));
+                         } else {
+  
+                             return 0;
+                         }
+                         //pynkt 4
+                         if(indexNumber >= 2){
+                             *(arr_distan + indexNumber - 2) = distanct(oldNumberX,oldNumberY,(yyvsp[-3].fval),(yyvsp[-1].fval));
+                              oldNumberX = (yyvsp[-3].fval);
+                              oldNumberY = (yyvsp[-1].fval);
+                         } 
+                         //check dist
+                         if(indexNumber >= 3){
+                              if(arr_distan[indexNumber-2] <  arr_distan[indexNumber-2])
+                               {
+                                    yyerror("Error input");    
+                                    return 0;
+                               }
+                         }
+
                     
 }
-#line 1382 "y.tab.c"
+#line 1404 "y.tab.c"
     break;
 
 
-#line 1386 "y.tab.c"
+#line 1408 "y.tab.c"
 
       default: break;
     }
@@ -1614,7 +1636,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 76 "yacc.y"
+#line 98 "yacc.y"
 
 main () 
 {  arr_distan =  (float*) malloc(MAX * sizeof(float));

@@ -7,17 +7,14 @@
 int noVector3 = 0;
 int noVector2 = 0;
 int wasError = 0;
-float min = 100000000;
-float max  = 0.0;
+float firstNumberX = 0;
+float firstNumberY = 0;
+float oldNumberX = 0;
+float oldNumberY = 0;
+float max  = -1.0;
+float temp = 0.0 ;
 int indexNumber = 0;
-int indexPointMin = 0;
-int indexPointMax = 0;
 float *arr_distan = NULL;
-struct Point
-{
-    int x[100];
-    int y[100];
-};
 
 float distanct(float x1, float y1, float x2, float y2){
     return (x1-x2)*(x1-x2) + (y1-y2)*(y1-y2);
@@ -39,11 +36,16 @@ float distanct(float x1, float y1, float x2, float y2){
 %%
 
  
-__list: _list ST {	 printf("No. of Points: %d\n", $1); 
-			         printf("The smallest distance is: %f \n", sqrt(min));
-                     printf("Position of the pair of points: %d\n", indexPointMin);
-                     printf("The smallest distance is: %f \n", sqrt(max));
-                     printf("Position of the pair of points: %d\n", indexPointMax);
+__list: _list ST {	 
+                     *(arr_distan + indexNumber - 1 ) = distanct(oldNumberX,oldNumberY,firstNumberX,firstNumberY);
+                    //print perimeterPoligon
+                    float perimeterPoligon = 0;
+                    for(int i = 0; i < indexNumber; i++){
+                        perimeterPoligon += sqrt(arr_distan[i]);
+                    }
+                    printf("The perimeterof poligon is %0.3f \n", perimeterPoligon);
+                
+			        
 			 }
  
 _list:  /* empty */ { $$ = 0; }
@@ -59,18 +61,38 @@ item: minDic {noVector2++; };
 minDic: _min; 
 
 _min: LPAREN NUM COMMA NUM RPAREN{
-                        *(arr_distan + indexNumber) = $2;
-                        indexNumber = indexNumber+ 1;
-                        *(arr_distan + indexNumber) = $4;
+                         if(indexNumber == 0){
+                            firstNumberX = $2;
+                            firstNumberY = $4;
+                            oldNumberX = $2;
+                            oldNumberY = $4;
+                         } 
+
                         indexNumber = indexNumber +1;
-                        if(distanct(0,0,$2,$4) < min){
-                            min = distanct(0,0,$2,$4);
-                            indexPointMin = (indexNumber+1)/2;
-                        }
-                        if(distanct(0,0,$2,$4) >= max){
-                            max = distanct(0,0,$2,$4);
-                            indexPointMax = (indexNumber+1)/2;
-                        }
+                        
+                        //punkt 3
+                        if(max <= distanct(0,0,$2,$4))
+                         {
+                                max = distanct(0,0,$2,$4);
+                         } else {
+  
+                             return 0;
+                         }
+                         //pynkt 4
+                         if(indexNumber >= 2){
+                             *(arr_distan + indexNumber - 2) = distanct(oldNumberX,oldNumberY,$2,$4);
+                              oldNumberX = $2;
+                              oldNumberY = $4;
+                         } 
+                         //check dist
+                         if(indexNumber >= 3){
+                              if(arr_distan[indexNumber-2] <  arr_distan[indexNumber-2])
+                               {
+                                    yyerror("Error input");    
+                                    return 0;
+                               }
+                         }
+
                     
 }   
 %%
